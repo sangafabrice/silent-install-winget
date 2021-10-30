@@ -1,5 +1,6 @@
 $WINGET_LATEST_RELEASE = 'https://api.github.com/repos/microsoft/winget-cli/releases/latest'
 $WINGET_DEPENDENCY_PATTERN = 'Microsoft.VCLibs.140.00.UWPDesktop_*__8wekyb3d8bbwe.appx'
+$WINGET_VERSION_PATTERN = '(?<Version>\d+\.\d+\.\d+(\.\d+)?)'
 
 function Get-WingetDownloadInfo {
     try {
@@ -8,7 +9,7 @@ function Get-WingetDownloadInfo {
         Select-Object -Property @{
             Name = 'Version';
             Expression = {
-                $_.tag_name -match '(?<Version>\d+\.\d+\.\d+(\.\d+)?)' | Out-Null
+                $_.tag_name -match $WINGET_VERSION_PATTERN | Out-Null
                 $Matches.Version
             }
         },@{
@@ -30,7 +31,7 @@ function Get-WingetDownloadInfo {
 }
 
 function Compare-WingetDownloadInfo ($Version) {
-    ($(try {winget --version} catch {}) ?? 'v0.0.0') -match '(?<Version>\d+\.\d+\.\d+(\.\d+)?)' | Out-Null
+    ($(try {winget --version} catch {}) ?? 'v0.0.0') -match $WINGET_VERSION_PATTERN | Out-Null
     ([version] $Version) -gt ([version] $Matches.Version)
 }
 
@@ -72,4 +73,4 @@ function Install-Winget ($SaveCopyTo) {
     }
 }
 
-Export-ModuleMember -Function 'Install-Winget'
+# Export-ModuleMember -Function 'Install-Winget'
