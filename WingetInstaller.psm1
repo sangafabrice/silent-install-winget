@@ -7,7 +7,10 @@ function Get-WingetDownloadInfo {
         ConvertFrom-Json |
         Select-Object -Property @{
             Name = 'Version';
-            Expression = {$_.tag_name}
+            Expression = {
+                $_.tag_name -match '(?<Version>\d+\.\d+\.\d+(\.\d+)?)' | Out-Null
+                $Matches.Version
+            }
         },@{
             Name = 'Link';
             Expression = {
@@ -27,7 +30,8 @@ function Get-WingetDownloadInfo {
 }
 
 function Compare-WingetDownloadInfo ($Version) {
-    -not (Test-Path -Path "$Version")
+    ($(try {winget --version} catch {}) ?? 'v0.0.0') -match '(?<Version>\d+\.\d+\.\d+(\.\d+)?)' | Out-Null
+    ([version] $Version) -gt ([version] $Matches.Version)
 }
 
 function Save-Winget ($Link) {
@@ -47,7 +51,7 @@ function Install-Winget ($SaveCopyTo) {
     ForEach-Object {
         if (Compare-WingetDownloadInfo -Version $_.Version) {
             if ($SaveCopyToExist) {
-                $DlLocalArchive = "$($SaveCopyTo -replace '\\$')\$($_.Version).*"
+                $DlLocalArchive = "$($SaveCopyTo -replace '\\$')\v$($_.Version).*"
                 if (Test-Path -Path $DlLocalArchive) {
                     $_.Link = (Resolve-Path -Path $DlLocalArchive).Path
                 }
@@ -68,4 +72,4 @@ function Install-Winget ($SaveCopyTo) {
     }
 }
 
-Export-ModuleMember -Function 'Install-Winget'
+# Export-ModuleMember -Function 'Install-Winget'
