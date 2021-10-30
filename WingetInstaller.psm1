@@ -73,4 +73,4 @@ function Install-Winget ($SaveCopyTo) {
     }
 }
 
-# Export-ModuleMember -Function 'Install-Winget'
+Export-ModuleMember -Function 'Install-Winget'
