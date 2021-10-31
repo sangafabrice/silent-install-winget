@@ -68,7 +68,6 @@ function Install-Winget ($SaveCopyTo) {
                 }
                 Remove-Item -Path $_.MsixPath -Recurse -Force
             }
-            New-Item -Path $_.Version -ItemType File | Out-Null
         }
     }
 }
