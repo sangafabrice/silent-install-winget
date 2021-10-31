@@ -31,9 +31,8 @@ function Get-WingetDownloadInfo {
 }
 
 function Compare-WingetDownloadInfo ($Version) {
-    # ($(try {winget --version} catch {}) ?? 'v0.0.0') -match $WINGET_VERSION_PATTERN | Out-Null
-    # ([version] $Version) -gt ([version] $Matches.Version)
-    $true
+    ($(try {winget --version} catch {}) ?? 'v0.0.0') -match $WINGET_VERSION_PATTERN | Out-Null
+    ([version] $Version) -gt ([version] $Matches.Version)
 }
 
 function Save-Winget ($Link) {
