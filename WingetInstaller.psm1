@@ -31,8 +31,9 @@ function Get-WingetDownloadInfo {
 }
 
 function Compare-WingetDownloadInfo ($Version) {
-    ($(try {winget --version} catch {}) ?? 'v0.0.0') -match $WINGET_VERSION_PATTERN | Out-Null
-    ([version] $Version) -gt ([version] $Matches.Version)
+    # ($(try {winget --version} catch {}) ?? 'v0.0.0') -match $WINGET_VERSION_PATTERN | Out-Null
+    # ([version] $Version) -gt ([version] $Matches.Version)
+    $true
 }
 
 function Save-Winget ($Link) {
@@ -52,7 +53,8 @@ function Install-Winget ($SaveCopyTo) {
     ForEach-Object {
         if (Compare-WingetDownloadInfo -Version $_.Version) {
             if ($SaveCopyToExist) {
-                $DlLocalArchive = "$($SaveCopyTo -replace '\\$')\v$($_.Version).*"
+                $_.Link -match '(?<Extension>[^\.]+$)' | Out-Null
+                $DlLocalArchive = "$($SaveCopyTo -replace '\\$')\v$($_.Version).$($Matches.Extension)"
                 if (Test-Path -Path $DlLocalArchive) {
                     $_.Link = (Resolve-Path -Path $DlLocalArchive).Path
                 }
